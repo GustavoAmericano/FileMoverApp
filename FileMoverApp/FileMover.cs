@@ -18,15 +18,21 @@ namespace FileMoverApp
             source = Console.ReadLine();
             Console.Write("Target path: (D:\\a\\folder\\): ");
             target = Console.ReadLine();
-            Console.WriteLine("File types to move (jpg,png,mpeg): ");
+            Console.Write("File types to move (jpg,png,mpeg): ");
             var extensions = Console.ReadLine().Split(',');
 
             _files = GetAllFiles(extensions);
             _totalSize = CalculateSize(_files);
 
-            Console.WriteLine($"Found {_files.Count} matching files, with total size of {_totalSize / 1000000}MB. \n Move files?");
-            var input = Console.ReadLine();
-
+            Console.Clear();
+            Console.Write($"Found {_files.Count} matching files, with total size of {_totalSize / 1000000}MB. \n Move files?(Y/N): ");
+            var input = Console.ReadLine().ToLower();
+            while ((!input.Equals("y") && !input.Equals("n")))
+            {
+                Console.Clear();
+                Console.WriteLine("Invalid input. Move files? (Y/N): ");
+                input = Console.ReadLine();
+            }
             if (input.ToLower().Equals("y"))
             {
                 _startTime = DateTime.Now;
@@ -71,7 +77,7 @@ namespace FileMoverApp
 
                 while (System.IO.File.Exists(target + "\\" + filename + "." + extension))
                 {
-                    Console.Write($"File {filename} already exists!");
+                    Console.Write($"File {filename} already exists! ");
 
                     append += 1;
                     var appendAS = append.ToString();
