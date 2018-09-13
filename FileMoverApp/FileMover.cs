@@ -7,21 +7,27 @@ namespace FileMoverApp
 {
     public class FileMover
     {
-        DateTime _startTime;
-        long _totalSize = 0;
-        List<string> _files = new List<string>();
+        private DateTime _startTime;
+        private long _totalSize = 0;
+        private List<string> _files = new List<string>();
         private string target, source;
 
         public void Start()
         {
-            Console.Write("Source path: (D:\\a\\folder\\): ");
-            source = Console.ReadLine();
-            Console.Write("Target path: (D:\\a\\folder\\): ");
-            target = Console.ReadLine();
-            Console.Write("File types to move (jpg,png,mpeg): ");
-            var extensions = Console.ReadLine().Split(',');
+            source = GetSourceFolder();
+
+            target = GetTargetFolder();
+
+            var extensions = GetExtensions();
+
+
+            
 
             _files = GetAllFiles(extensions);
+            if (_files == null)
+            {
+                Console.WriteLine("Source target does not exist!");
+            }
             _totalSize = CalculateSize(_files);
 
             Console.Clear();
@@ -33,6 +39,7 @@ namespace FileMoverApp
                 Console.WriteLine("Invalid input. Move files? (Y/N): ");
                 input = Console.ReadLine();
             }
+
             if (input.ToLower().Equals("y"))
             {
                 _startTime = DateTime.Now;
@@ -40,9 +47,53 @@ namespace FileMoverApp
                 DateTime endTime = DateTime.Now;
                 TimeSpan time = endTime.Subtract(_startTime);
 
-                Console.WriteLine($"Moved {_files.Count} files in {time.Hours} hours, {time.Minutes}, {time.Seconds} seconds.");
+                Console.WriteLine(
+                    $"Moved {_files.Count} files in {time.Hours} hours, {time.Minutes}, {time.Seconds} seconds.");
             }
+            else return;
             Console.ReadLine();
+        }
+
+        private string[] GetExtensions()
+        {
+            Console.Write("File types to move (jpg,png,mpeg): ");
+            return Console.ReadLine().Split(',');
+        }
+
+        private string GetTargetFolder()
+        {
+            target = Console.ReadLine();
+            while (!System.IO.File.Exists(target))
+            {
+                Console.Write("Target path: (D:\\a\\folder\\): ");
+                Console.Write("Target folder does not exists! \n" +
+                              "Would you like to create it? (Y/N)");
+                string inputString = Console.ReadLine().ToLower();
+                while ((!inputString.Equals("y") && !inputString.Equals("n")))
+                {
+                    Console.Clear();
+                    Console.WriteLine("Invalid input. Create target folder? (Y/N): ");
+                    inputString = Console.ReadLine();
+                }
+
+                if (inputString.Equals("y")) System.IO.File.Create(target);
+                else return null;
+
+            }
+            return target;
+        }
+
+        private string GetSourceFolder()
+        {
+            Console.Write("Source path: (D:\\a\\folder\\): ");
+            string source = Console.ReadLine();
+            while (!System.IO.File.Exists(source))
+            {
+                Console.Write("Source folder does not exists! \n" +
+                              "Source path: (D:\\a\\folder\\): ");
+                source = Console.ReadLine();
+            }
+            return source;
         }
 
         private long CalculateSize(List<string> files)
