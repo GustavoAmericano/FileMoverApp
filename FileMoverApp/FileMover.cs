@@ -20,14 +20,8 @@ namespace FileMoverApp
 
             var extensions = GetExtensions();
 
-
-            
-
             _files = GetAllFiles(extensions);
-            if (_files == null)
-            {
-                Console.WriteLine("Source target does not exist!");
-            }
+
             _totalSize = CalculateSize(_files);
 
             Console.Clear();
@@ -39,7 +33,6 @@ namespace FileMoverApp
                 Console.WriteLine("Invalid input. Move files? (Y/N): ");
                 input = Console.ReadLine();
             }
-
             if (input.ToLower().Equals("y"))
             {
                 _startTime = DateTime.Now;
@@ -62,10 +55,11 @@ namespace FileMoverApp
 
         private string GetTargetFolder()
         {
+            Console.Write("Target path: (D:\\a\\folder\\): ");
             target = Console.ReadLine();
+
             while (!System.IO.File.Exists(target))
             {
-                Console.Write("Target path: (D:\\a\\folder\\): ");
                 Console.Write("Target folder does not exists! \n" +
                               "Would you like to create it? (Y/N)");
                 string inputString = Console.ReadLine().ToLower();
@@ -76,9 +70,14 @@ namespace FileMoverApp
                     inputString = Console.ReadLine();
                 }
 
-                if (inputString.Equals("y")) System.IO.File.Create(target);
-                else return null;
-
+                if (inputString.Equals("y"))
+                {
+                    System.IO.File.Create(target);
+                    return target;
+                }
+                Console.Clear();
+                Console.Write("Target path: (D:\\a\\folder\\): ");
+                target = Console.ReadLine();
             }
             return target;
         }
