@@ -41,10 +41,9 @@ namespace FileMoverApp
                 TimeSpan time = endTime.Subtract(_startTime);
 
                 Console.WriteLine(
-                    $"Moved {_files.Count} files in {time.Hours} hours, {time.Minutes}, {time.Seconds} seconds.");
+                    $"Moved {_files.Count} files in {time.Hours}:{time.Minutes}:{time.Seconds}. (hh/mm/ss)");
             }
             else return;
-            Console.ReadLine();
         }
 
         private string[] GetExtensions()
@@ -58,7 +57,7 @@ namespace FileMoverApp
             Console.Write("Target path: (D:\\a\\folder\\): ");
             target = Console.ReadLine();
 
-            while (!System.IO.File.Exists(target))
+            while (!Directory.Exists(target))
             {
                 Console.Write("Target folder does not exists! \n" +
                               "Would you like to create it? (Y/N)");
@@ -72,7 +71,7 @@ namespace FileMoverApp
 
                 if (inputString.Equals("y"))
                 {
-                    System.IO.File.Create(target);
+                    Directory.CreateDirectory(target);
                     return target;
                 }
                 Console.Clear();
@@ -86,7 +85,7 @@ namespace FileMoverApp
         {
             Console.Write("Source path: (D:\\a\\folder\\): ");
             string source = Console.ReadLine();
-            while (!System.IO.File.Exists(source))
+            while (!Directory.Exists(source))
             {
                 Console.Write("Source folder does not exists! \n" +
                               "Source path: (D:\\a\\folder\\): ");
@@ -123,20 +122,23 @@ namespace FileMoverApp
                 var file = x.Split(@"\").Last();
                 var extension = file.Split(".").Last();
                 var filename = file.Remove(file.Length - (extension.Length + 1));
-                int append = 0;
 
-                while (System.IO.File.Exists(target + "\\" + filename + "." + extension))
+
+                if(File.Exists(target + "\\" + filename + "." + extension))
                 {
                     Console.Write($"File {filename} already exists! ");
+                    var newName = filename;
+                    int append = 0;
+                    while (File.Exists(target + "\\" + newName + "." + extension))
+                    {
+                        append++;
+                        newName = $"{filename}_{append.ToString()}";
 
-                    append += 1;
-                    var appendAS = append.ToString();
-                    if (append != 1) filename.Remove(filename.Length - 1);
-                    filename += $"_{appendAS}";
-
-                    Console.WriteLine($"Renaming to {filename}");
-
+                    }
+                    Console.WriteLine($"Renaming to {newName}");
+                    filename = newName;
                 }
+
                 System.IO.File.Copy(x, target + "\\" + filename + "." + extension);
             });
         }
